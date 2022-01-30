@@ -1,28 +1,26 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require('cors')
+const cors = require("cors");
 const app = express();
 
 const FoodModel = require("./models/Food");
 
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 
 mongoose.connect(
-  "mongodb+srv://jackwillis:ViFMEn9e723wQ3@cluster0.nc7sf.mongodb.net/food?retryWrites=true&w=majority",
+  "mongodb+srv://jackwillis:@cluster0.nc7sf.mongodb.net/food?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
   }
 );
 
-
-
 app.post("/insert", async (req, res) => {
-  const foodName = req.body.foodName
-  const days = req.body.days
+  const foodName = req.body.foodName;
+  const days = req.body.days;
 
   const food = new FoodModel({ foodName: foodName, daysSinceIAte: days });
-  
+
   try {
     await food.save();
     res.send("inserted data");
@@ -31,16 +29,14 @@ app.post("/insert", async (req, res) => {
   }
 });
 
-
 app.get("/read", async (req, res) => {
   FoodModel.find({}, (err, result) => {
     if (err) {
-      res.send(err)
+      res.send(err);
     }
-    res.send(result)
+    res.send(result);
   });
 });
-
 
 app.put("/update", async (req, res) => {
   const newFoodName = req.body.newFoodName;
@@ -48,23 +44,20 @@ app.put("/update", async (req, res) => {
 
   try {
     await FoodModel.findById(id, (err, updatedFood) => {
-      updatedFood.foodName = newFoodName
-      updatedFood.save()
-      res.send("update")
-    })
+      updatedFood.foodName = newFoodName;
+      updatedFood.save();
+      res.send("update");
+    });
   } catch (err) {
     console.log(err);
   }
 });
 
-
 app.delete("/delete/:id", async (req, res) => {
-  const id = req.params.id
-  await FoodModel.findByIdAndRemove(id).exec()
-  res.send("deleted")
-})
-
-
+  const id = req.params.id;
+  await FoodModel.findByIdAndRemove(id).exec();
+  res.send("deleted");
+});
 
 app.listen(3001, () => {
   console.log("Server Running on Port 3001");
